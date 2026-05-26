@@ -87,8 +87,28 @@ export default {
         inputs: options
       };
 
+      ctx.waitUntil((async () => {
+        if (!payload.job.name === 'msg') return;
+        await fetch(`https://discord.com/api/v10/channels/${payload.inputs.channel}/messages`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bot ${env.BOT_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            flags: 1 << 15,
+            components: [
+              {
+                type: 10,
+                content: payload.inputs.content
+              }
+            ]
+          })
+        });
+      })());
+
       return new Response(
-        JSON.stringify({ type: 5 }),
+        JSON.stringify({ type: 4, data: { flags: 1 << 6, content: 'Sending...' } }),
         { headers: { "Content-Type": "application/json" } }
       );
     }
