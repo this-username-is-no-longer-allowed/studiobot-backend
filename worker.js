@@ -89,6 +89,7 @@ export default {
 
       ctx.waitUntil((async () => {
         if (!payload.job.name === 'msg') return;
+        if (!JSON.parse(env.WHITELIST).includes(payload.userId)) return;
         await fetch(`https://discord.com/api/v10/channels/${payload.inputs.channel}/messages`, {
           method: 'POST',
           headers: {
@@ -108,7 +109,7 @@ export default {
       })());
 
       return new Response(
-        JSON.stringify({ type: 4, data: { flags: 1 << 6, content: 'Sending...' } }),
+        JSON.stringify({ type: 4, data: { flags: 1 << 6, content: JSON.parse(env.WHITELIST).includes(payload.userId) ? 'Sending...' : 'Error: You are not whitelisted' } }),
         { headers: { "Content-Type": "application/json" } }
       );
     }
